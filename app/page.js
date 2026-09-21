@@ -207,7 +207,7 @@ export default function Home() {
             {/* RIGHT — IMAGE */}
             <div className="flex justify-center lg:justify-end items-end w-full">
 
-              <div className="relative w-72 sm:w-105 lg:w-120 xl:w-140">
+              <div className="relative w-72 sm:w-105 lg:w-120 xl:w-140 xl:translate-x-24">
 
                 {/* Purple Glow */}
                 <div
