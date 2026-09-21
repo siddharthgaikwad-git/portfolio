@@ -1,249 +1,1126 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Image from "next/image";
 
 const Contact = () => {
+  // Form submission status: "idle" | "sending" | "sent" | "error"
+  const [status, setStatus] = useState("idle");
+
+  // Sends the form data to our API route (/api/contact)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+
+    // Collect all named inputs (name, email, message, website) into a plain object
+    const data = Object.fromEntries(new FormData(form));
+
+    setStatus("sending");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      // Treat any non-2xx response as a failure
+      if (!res.ok) throw new Error("Request failed");
+
+      // Clear the form only after the email was actually sent
+      form.reset();
+      setStatus("sent");
+    } catch {
+      setStatus("error");
+    }
+  };
+
   return (
     <section
       id="contact"
-      className="min-h-screen bg-black text-white px-6 md:px-10 lg:px-16 py-16"
+      className="
+        relative min-h-screen
+        overflow-hidden
+        bg-black
+        text-white
+        px-6
+        py-20
+        md:px-10
+        lg:px-16
+        lg:pt-24
+        lg:pb-16
+      "
     >
-      {/* ================= HEADER ================= */}
-      <div className="mb-4">
-        <p className="text-[#7749FF] text-lg font-light">
-          CONTACT
-        </p>
 
-        <h2 className="text-4xl md:text-5xl font-bold leading-tight mt-2">
-          LET'S BUILD
-          SOMETHING.
-        </h2>
+      {/* =================================================
+          BACKGROUND GLOW
+      ================================================== */}
 
-        <p className="text-gray-400 text-base md:text-lg mt-1">
-          Have an idea, project, or just want to say hello?
-        </p>
-      </div>
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          -left-40
+          top-40
+          h-96
+          w-96
+          rounded-full
+          bg-[#7749FF]/10
+          blur-[140px]
+        "
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          -right-40
+          bottom-0
+          h-96
+          w-96
+          rounded-full
+          bg-[#7749FF]/8
+          blur-[140px]
+        "
+      />
 
 
-      {/* ================= MAIN CONTENT ================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-24 max-w-5xl mx-auto">
+      {/* =================================================
+          MAIN CONTAINER
+      ================================================== */}
+
+      <div className="relative mx-auto max-w-7xl">
 
 
-        {/* ================= MESSAGE FORM ================= */}
-        <div className="border border-[#7749FF] rounded-xl p-2 md:p-5 
-                shadow-[0_0_20px_4px_#7749FF]">
+        {/* =================================================
+            HEADER
+        ================================================== */}
 
-          {/* Form Heading */}
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <span className="w-2 h-2 rounded-full bg-[#7749FF] animate-pulse  shadow-[0_0_10px_#7749FF]" />
+        <div className="mb-4">
 
-            <h3 className="text-xl md:text-lg font-medium tracking-wide">
-              MESSAGE ME
-            </h3>
+          {/* Contact Label */}
+
+          <div className="flex items-center gap-4">
+
+            <p
+              className="
+                text-sm font-semibold
+                tracking-[0.35em]
+                text-[#8A63FF]
+              "
+            >
+              CONTACT
+            </p>
+
           </div>
 
 
-          {/* Name */}
-          <div className="mb-3">
-            <label className="block text-sm text-gray-300 mb-2">
-              Name
-            </label>
+          {/* Main Heading */}
 
-            <div className="relative">
-              <Image
-                src="/person.png"
-                alt=""
-                width={20}
-                height={20}
-                className="absolute left-5 top-1/2 -translate-y-1/2"
-              />
+          <h2
+            className="
+              mt-5
+              max-w-4xl
+              text-2xl
+              font-bold
+              leading-[0.95]
+              tracking-[-0.04em]
 
-              <input
-                type="text"
-                placeholder="Your name"
-                className="w-full bg-transparent border border-gray-700 rounded-lg py-4 pl-14 pr-4 text-white placeholder:text-gray-500 outline-none focus:border-[#7749FF] transition-colors"
-              />
-            </div>
-          </div>
-
-
-          {/* Email */}
-          <div className="mb-3">
-            <label className="block text-sm text-gray-300 mb-2">
-              Email
-            </label>
-
-            <div className="relative">
-              <Image
-                src="/email.png"
-                alt=""
-                width={20}
-                height={20}
-                className="absolute left-5 top-1/2 -translate-y-1/2"
-              />
-
-              <input
-                type="email"
-                placeholder="Your email"
-                className="w-full bg-transparent border border-gray-700 rounded-lg py-4 pl-14 pr-4 text-white placeholder:text-gray-500 outline-none focus:border-[#7749FF] transition-colors"
-              />
-            </div>
-          </div>
-
-
-          {/* Message */}
-          <div className="mb-3">
-            <label className="block text-sm text-gray-300 mb-2">
-              Message
-            </label>
-
-            <div className="relative">
-              <Image
-                src="/pencil.png"
-                alt=""
-                width={20}
-                height={20}
-                className="absolute left-5 top-5"
-              />
-
-              <textarea
-                rows="3"
-                placeholder="Write your message..."
-                className="w-full bg-transparent border border-gray-700 rounded-lg py-4 pl-14 pr-4 text-white placeholder:text-gray-500 outline-none focus:border-[#7749FF] transition-colors resize-none"
-              />
-            </div>
-          </div>
-
-
-          {/* Send Button */}
-          <button
-            type="submit"
-            className="w-full border border-gray-700  rounded-lg py-4 flex items-center justify-center gap-3 text-sm font-semibold tracking-widest hover:bg-[#7749FF] transition-colors"
+              sm:text-3xl
+              md:text-4xl
+            "
           >
-            <Image
-              src="/send.png"
-              alt=""
-              width={20}
-              height={20}
+            LET'S BUILD SOMETHING
+
+          </h2>
+
+
+          {/* Description */}
+
+          <p
+            className="
+              mt-4
+              max-w-xl
+              text-base
+              leading-7
+              text-gray-400
+              sm:text-lg
+            "
+          >
+            Have an idea, project, or just want to say hello?
+            <br className="hidden sm:block" />
+            I'd love to hear from you.
+          </p>
+
+        </div>
+
+
+
+        {/* =================================================
+            MAIN CONTENT
+        ================================================== */}
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-12
+
+            lg:grid-cols-[1.05fr_0.95fr]
+            lg:gap-20
+          "
+        >
+
+
+          {/* =================================================
+              MESSAGE FORM
+          ================================================== */}
+
+          <div
+            className="
+              relative
+              rounded-2xl
+              border
+              border-[#7749FF]/50
+              bg-white/1.5
+              p-5
+
+              sm:p-7
+              md:p-8
+
+              shadow-[0_20px_70px_rgba(119,73,255,0.10)]
+            "
+          >
+
+            {/* Subtle Gradient */}
+
+            <div
+              aria-hidden="true"
+              className="
+                pointer-events-none
+                absolute
+                inset-0
+                rounded-2xl
+                bg-linear-to-br
+                from-[#7749FF]/4
+                via-transparent
+                to-transparent
+              "
             />
 
-            SEND MESSAGE
-          </button>
 
-        </div>
+            <div className="relative">
 
 
-        {/* ================= CONNECT WITH ME ================= */}
-        <div className="flex flex-col justify-center">
+              {/* =================================================
+                  FORM HEADER
+              ================================================== */}
 
-          <h3 className="text-xl md:text-2xl font-medium tracking-widest mb-12">
-            CONNECT WITH ME
-          </h3>
+              <div
+                className="
+                  mb-6
+                  flex
+                  items-center
+                  justify-between
+                "
+              >
+
+                <div className="flex items-center gap-3">
+
+                  <div
+                    className="
+                      flex
+                      h-9
+                      w-9
+                      items-center
+                      justify-center
+                      rounded-lg
+                      bg-[#7749FF]/10
+                      ring-1
+                      ring-[#7749FF]/30
+                    "
+                  >
+
+                    <Image
+                      src="/icons/send.png"
+                      alt="send"
+                      width={19}
+                      height={19}
+                    />
+
+                  </div>
 
 
-          {/* Email */}
-          <a
-            href="mailto:siddharthgaikwad8010@gmail.com"
-            target="_blank"
-            className="border border-gray-800 rounded-xl p-5 flex items-center justify-between hover:border-[#7749FF] transition-colors mb-5"
-          >
-            <div className="flex items-center gap-5">
+                  <h3
+                    className="
+                      text-sm
+                      font-semibold
+                      tracking-[0.16em]
+                      sm:text-base
+                    "
+                  >
+                    SEND ME A MESSAGE
+                  </h3>
 
-              <Image
-                src="/email.png"
-                alt="email"
-                width={30}
-                height={30}
-              />
+                </div>
 
-              <div>
-                <p className="text-base font-semibold">
+
+                <span
+                  className="
+                    hidden
+                    text-xs
+                    text-gray-400
+                    sm:block
+                  "
+                >
+                  Let's talk.
+                </span>
+
+              </div>
+
+
+
+              {/* =================================================
+                  FORM
+              ================================================== */}
+
+              <form
+                onSubmit={handleSubmit}
+                onChange={() => {
+                  // When the user edits the form again, clear the previous sent/error state
+                  if (status === "sent" || status === "error") setStatus("idle");
+                }}
+                className="space-y-4"
+              >
+
+                {/* Honeypot field: hidden from real users, bots tend to fill it.
+                    The API route silently ignores any submission where this has a value. */}
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="hidden"
+                />
+
+
+                {/* NAME */}
+
+                <div>
+
+                  <label
+                    htmlFor="contact-name"
+                    className="
+                      mb-2
+                      block
+                      text-sm
+                      font-medium
+                      text-gray-300
+                    "
+                  >
+                    Name
+                  </label>
+
+
+                  <div className="group relative">
+
+                    <Image
+                      src="/icons/person.png"
+                      alt="person"
+                      width={20}
+                      height={20}
+                      className="
+                        absolute
+                        left-4
+                        top-1/2
+                        z-10
+                        -translate-y-1/2
+                        opacity-60
+                        transition-opacity
+                        duration-300
+                        group-focus-within:opacity-100
+                      "
+                    />
+
+
+                    <input
+                      id="contact-name"
+                      name="name"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Your name"
+                      required
+                      className="
+                        w-full
+                        rounded-xl
+                        border
+                        border-white/10
+                        bg-black/40
+                        py-4
+                        pl-12
+                        pr-4
+                        text-base
+                        text-white
+                        outline-none
+
+                        placeholder:text-gray-400
+
+                        transition-all
+                        duration-300
+
+                        hover:border-white/20
+
+                        focus:border-[#7749FF]/70
+                        focus:bg-[#7749FF]/25
+                        focus:ring-4
+                        focus:ring-[#7749FF]/10
+                      "
+                    />
+
+                  </div>
+
+                </div>
+
+
+
+                {/* EMAIL */}
+
+                <div>
+
+                  <label
+                    htmlFor="contact-email"
+                    className="
+                      mb-2
+                      block
+                      text-sm
+                      font-medium
+                      text-gray-300
+                    "
+                  >
+                    Email
+                  </label>
+
+
+                  <div className="group relative">
+
+                    <Image
+                      src="/icons/email.png"
+                      alt="email"
+                      width={20}
+                      height={20}
+                      className="
+                        absolute
+                        left-4
+                        top-1/2
+                        z-10
+                        -translate-y-1/2
+                        opacity-60
+                        transition-opacity
+                        duration-300
+                        group-focus-within:opacity-100
+                      "
+                    />
+
+
+                    <input
+                      id="contact-email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="your@email.com"
+                      required
+                      className="
+                        w-full
+                        rounded-xl
+                        border
+                        border-white/10
+                        bg-black/40
+                        py-4
+                        pl-12
+                        pr-4
+                        text-base
+                        text-white
+                        outline-none
+
+                        placeholder:text-gray-400
+
+                        transition-all
+                        duration-300
+
+                        hover:border-white/20
+
+                        focus:border-[#7749FF]/70
+                        focus:bg-[#7749FF]/2.5
+                        focus:ring-4
+                        focus:ring-[#7749FF]/10
+                      "
+                    />
+
+                  </div>
+
+                </div>
+
+
+
+                {/* MESSAGE */}
+
+                <div>
+
+                  <label
+                    htmlFor="contact-message"
+                    className="
+                      mb-2
+                      block
+                      text-sm
+                      font-medium
+                      text-gray-300
+                    "
+                  >
+                    Message
+                  </label>
+
+
+                  <div className="group relative">
+
+                    <Image
+                      src="/icons/pencil.png"
+                      alt="pencile"
+                      width={20}
+                      height={20}
+                      className="
+                        absolute
+                        left-4
+                        top-5
+                        z-10
+                        opacity-60
+                        transition-opacity
+                        duration-300
+                        group-focus-within:opacity-100
+                      "
+                    />
+
+
+                    <textarea
+                      id="contact-message"
+                      name="message"
+                      rows={4}
+                      placeholder="Tell me about your project, idea or just say hi..."
+                      required
+                      className="
+                        w-full
+                        resize-none
+                        rounded-xl
+                        border
+                        border-white/10
+                        bg-black/40
+                        py-4
+                        pl-12
+                        pr-4
+                        text-base
+                        leading-6
+                        text-white
+                        outline-none
+
+                        placeholder:text-gray-400
+
+                        transition-all
+                        duration-300
+
+                        hover:border-white/20
+
+                        focus:border-[#7749FF]/70
+                        focus:bg-[#7749FF]/2.5
+                        focus:ring-4
+                        focus:ring-[#7749FF]/10
+
+                        [&::-webkit-scrollbar]:w-2
+                        [&::-webkit-scrollbar-track]:bg-transparent
+                        [&::-webkit-scrollbar-thumb]:rounded-full
+                        [&::-webkit-scrollbar-thumb]:bg-white/20
+                        hover:[&::-webkit-scrollbar-thumb]:bg-[#7749FF]/70
+                      "
+                    />
+
+                  </div>
+
+                </div>
+
+
+
+                {/* =================================================
+                    SEND BUTTON
+                ================================================== */}
+
+                <div className="pt-2">
+
+                  {/* Disabled while sending to prevent double submissions */}
+                  <button
+                    type="submit"
+                    disabled={status === "sending"}
+                    className="
+                      group
+                      flex
+                      w-full
+                      items-center
+                      justify-center
+                      gap-3
+                      rounded-xl
+                      bg-[#7749FF]
+                      px-6
+                      py-4
+                      text-sm
+                      font-semibold
+                      tracking-[0.14em]
+                      text-white
+
+                      shadow-[0_10px_30px_rgba(119,73,255,0.20)]
+
+                      transition-all
+                      duration-300
+
+                      hover:-translate-y-0.5
+                      hover:bg-[#8358ff]
+                      hover:shadow-[0_15px_40px_rgba(119,73,255,0.30)]
+
+                      active:translate-y-0
+
+                      focus:outline-none
+                      focus:ring-4
+                      focus:ring-[#7749FF]/30
+
+                      disabled:cursor-not-allowed
+                      disabled:opacity-60
+                    "
+                  >
+
+                    <Image
+                      src="/icons/send.png"
+                      alt="send"
+                      width={19}
+                      height={19}
+                      className="
+                        transition-transform
+                        duration-300
+                        group-hover:-translate-y-0.5
+                        group-hover:translate-x-0.5
+                      "
+                    />
+
+                    {/* Button label follows the submission status, so feedback is visible without scrolling */}
+                    {status === "sending"
+                      ? "SENDING..."
+                      : status === "sent"
+                        ? "SENT ✓"
+                        : status === "error"
+                          ? "TRY AGAIN"
+                          : "SEND MESSAGE"}
+
+                    <span
+                      aria-hidden="true"
+                      className="
+                        text-lg
+                        transition-transform
+                        duration-300
+                        group-hover:translate-x-1
+                      "
+                    >
+                      →
+                    </span>
+
+                  </button>
+
+                </div>
+
+
+                {/* Status message (success / error), announced to screen readers */}
+                <div aria-live="polite">
+
+                  {status === "sent" && (
+                    <p className="text-sm text-emerald-400">
+                      Message sent! I'll get back to you soon.
+                    </p>
+                  )}
+
+                  {status === "error" && (
+                    <p className="text-sm text-red-400">
+                      Something went wrong. Please try again or email me directly.
+                    </p>
+                  )}
+
+                </div>
+
+              </form>
+
+            </div>
+
+          </div>
+
+
+
+          {/* =================================================
+              CONNECT WITH ME
+          ================================================== */}
+
+          <div className="flex flex-col lg:pl-2">
+
+
+            {/* =================================================
+                OR
+            ================================================== */}
+
+            <div className="mb-5 flex items-center gap-4">
+
+              <span
+                className="
+                  text-base
+                  font-semibold
+                  tracking-[0.4em]
+                  text-gray-400
+                "
+              >
+                OR
+              </span>
+
+            </div>
+
+
+
+            {/* =================================================
+                HEADING
+            ================================================== */}
+
+            <h3
+              className="
+                text-3xl
+                font-bold
+                tracking-[-0.02em]
+
+                sm:text-4xl
+              "
+            >
+              CONNECT{" "}
+
+              <span className="text-[#8A63FF]">
+                WITH ME
+              </span>
+            </h3>
+
+
+            <p
+              className="
+                mt-4
+                max-w-lg
+                text-base
+                leading-6
+                text-gray-400
+
+                sm:text-base
+              "
+            >
+              Find me on these platforms.
+              I'm always open to new ideas,
+              collaborations, and interesting tech conversations.
+            </p>
+
+
+
+            {/* =================================================
+                SOCIAL ICONS
+            ================================================== */}
+
+            <div className="mt-10 flex items-center justify-center gap-6 lg:justify-start">
+
+              {/* =================================================
+                  EMAIL
+              ================================================== */}
+
+              <div className="group relative">
+
+                <a
+                  href="mailto:siddharthgaikwad8010@gmail.com"
+                  aria-label="Email Siddharth Gaikwad"
+                  className="
+                    relative
+                    flex
+                    h-16
+                    w-16
+                    items-center
+                    justify-center
+                    overflow-hidden
+                    rounded-full
+                    border
+                    border-white/30
+                    bg-black
+                    transition-all
+                    duration-300
+
+                    hover:border-[#7749FF]
+                    hover:shadow-[0_0_30px_rgba(119,73,255,0.40)]
+                  "
+                >
+
+                  {/* Purple Fill */}
+
+                  <span
+                    aria-hidden="true"
+                    className="
+                      absolute
+                      bottom-0
+                      left-0
+                      h-0
+                      w-full
+                      rounded-full
+                      bg-[#7749FF]
+                      transition-all
+                      duration-300
+                      group-hover:h-full
+                    "
+                  />
+
+
+                  {/* Email Image */}
+
+                  <Image
+                    src="/icons/email.png"
+                    alt="email"
+                    width={28}
+                    height={28}
+                    className="
+                      relative
+                      z-10
+                      object-contain
+                      transition-transform
+                      duration-300
+                      group-hover:scale-110
+                    "
+                  />
+
+                </a>
+
+
+                {/* Tooltip */}
+
+                <span
+                  className="
+                    pointer-events-none
+                    absolute
+                    left-1/2
+                    top-18
+                    -translate-x-1/2
+                    whitespace-nowrap
+                    rounded-md
+                    bg-[#7749FF]
+                    px-3
+                    py-1.5
+                    text-xs
+                    font-medium
+                    text-white
+                    opacity-0
+                    shadow-[0_8px_25px_rgba(119,73,255,0.30)]
+                    transition-all
+                    duration-300
+                    group-hover:top-19
+                    group-hover:opacity-100
+                  "
+                >
                   Email
-                </p>
+                </span>
 
-                <p className="text-sm text-gray-500 mt-1">
-                  siddharthgaikwad8010@gmail.com
-                </p>
               </div>
 
-            </div>
-
-            <span className="text-2xl text-gray-300">
-              ↗
-            </span>
-          </a>
 
 
-          {/* GitHub */}
-          <a
-            href="https://github.com/siddharthgaikwad-git"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border border-gray-800 rounded-xl p-5 flex items-center justify-between hover:border-[#7749FF] transition-colors mb-5"
-          >
-            <div className="flex items-center gap-5">
+              {/* =================================================
+                  GITHUB
+              ================================================== */}
 
-              <Image
-                src="/github.png"
-                alt="GitHub"
-                width={30}
-                height={30}
-                className="object-contain"
-              />
+              <div className="group relative">
 
-              <div>
-                <p className="text-base font-semibold">
+                <a
+                  href="https://github.com/siddharthgaikwad-git"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open Siddharth Gaikwad's GitHub profile"
+                  className="
+                    relative
+                    flex
+                    h-16
+                    w-16
+                    items-center
+                    justify-center
+                    overflow-hidden
+                    rounded-full
+                    border
+                    border-white/30
+                    bg-black
+                    transition-all
+                    duration-300
+
+                    hover:border-[#7749FF]
+                    hover:shadow-[0_0_30px_rgba(119,73,255,0.40)]
+                  "
+                >
+
+                  {/* Purple Fill */}
+
+                  <span
+                    aria-hidden="true"
+                    className="
+                      absolute
+                      bottom-0
+                      left-0
+                      h-0
+                      w-full
+                      rounded-full
+                      bg-[#7749FF]
+                      transition-all
+                      duration-300
+                      group-hover:h-full
+                    "
+                  />
+
+
+                  {/* GitHub Image */}
+
+                  <Image
+                    src="/icons/github.png"
+                    alt="github"
+                    width={29}
+                    height={29}
+                    className="
+                      relative
+                      z-10
+                      object-contain
+                      transition-transform
+                      duration-300
+                      group-hover:scale-110
+                    "
+                  />
+
+                </a>
+
+
+                {/* Tooltip */}
+
+                <span
+                  className="
+                    pointer-events-none
+                    absolute
+                    left-1/2
+                    top-18
+                    -translate-x-1/2
+                    whitespace-nowrap
+                    rounded-md
+                    bg-[#7749FF]
+                    px-3
+                    py-1.5
+                    text-xs
+                    font-medium
+                    text-white
+                    opacity-0
+                    shadow-[0_8px_25px_rgba(119,73,255,0.30)]
+                    transition-all
+                    duration-300
+                    group-hover:top-19
+                    group-hover:opacity-100
+                  "
+                >
                   GitHub
-                </p>
+                </span>
 
-                <p className="text-sm text-gray-500 mt-1">
-                  github.com/siddharthgaikwad-git
-                </p>
               </div>
 
-            </div>
-
-            <span className="text-2xl text-gray-300">
-              ↗
-            </span>
-          </a>
 
 
-          {/* LinkedIn */}
-          <a
-            href="https://www.linkedin.com/in/siddharth-gaikwad-web/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border border-gray-800 rounded-xl p-5 flex items-center justify-between hover:border-[#7749FF] transition-colors"
-          >
-            <div className="flex items-center gap-5">
+              {/* =================================================
+                  LINKEDIN
+              ================================================== */}
 
-              <Image
-                src="/linkedin.png"
-                alt="LinkedIn"
-                width={30}
-                height={30}
-              />
+              <div className="group relative">
 
-              <div>
-                <p className="text-base font-semibold">
+                <a
+                  href="https://www.linkedin.com/in/siddharth-gaikwad-web/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open Siddharth Gaikwad's LinkedIn profile"
+                  className="
+                    relative
+                    flex
+                    h-16
+                    w-16
+                    items-center
+                    justify-center
+                    overflow-hidden
+                    rounded-full
+                    border
+                    border-white/30
+                    bg-black
+                    transition-all
+                    duration-300
+
+                    hover:border-[#7749FF]
+                    hover:shadow-[0_0_30px_rgba(119,73,255,0.40)]
+                  "
+                >
+
+                  {/* Purple Fill */}
+
+                  <span
+                    aria-hidden="true"
+                    className="
+                      absolute
+                      bottom-0
+                      left-0
+                      h-0
+                      w-full
+                      rounded-full
+                      bg-[#7749FF]
+                      transition-all
+                      duration-300
+                      group-hover:h-full
+                    "
+                  />
+
+
+                  {/* LinkedIn Image */}
+
+                  <Image
+                    src="/icons/linkedin.png"
+                    alt="linkedin"
+                    width={29}
+                    height={29}
+                    className="
+                      relative
+                      z-10
+                      object-contain
+                      transition-transform
+                      duration-300
+                      group-hover:scale-110
+                    "
+                  />
+
+                </a>
+
+
+                {/* Tooltip */}
+
+                <span
+                  className="
+                    pointer-events-none
+                    absolute
+                    left-1/2
+                    top-18
+                    -translate-x-1/2
+                    whitespace-nowrap
+                    rounded-md
+                    bg-[#7749FF]
+                    px-3
+                    py-1.5
+                    text-xs
+                    font-medium
+                    text-white
+                    opacity-0
+                    shadow-[0_8px_25px_rgba(119,73,255,0.30)]
+                    transition-all
+                    duration-300
+
+                    group-hover:top-19
+                    group-hover:opacity-100
+                  "
+                >
                   LinkedIn
-                </p>
+                </span>
 
-                <p className="text-sm text-gray-500 mt-1">
-                  linkedin.com/in/siddharth-gaikwad-web
-                </p>
               </div>
 
             </div>
 
-            <span className="text-2xl text-gray-300">
-              ↗
-            </span>
-          </a>
+
+
+            {/* =================================================
+                EMAIL ADDRESS
+            ================================================== */}
+
+            <div className="mt-14 text-center lg:text-left">
+
+              <p
+                className="
+                  text-xs
+                  font-medium
+                  tracking-[0.3em]
+                  text-gray-400
+                "
+              >
+                PREFER EMAIL?
+              </p>
+
+
+              <a
+                href="mailto:siddharthgaikwad8010@gmail.com"
+                className="
+                  mt-2
+                  inline-block
+                  text-sm
+                  text-gray-400
+                  transition-colors
+                  duration-300
+                  hover:text-[#8A63FF]
+                "
+              >
+                siddharthgaikwad8010@gmail.com
+              </a>
+
+            </div>
+
+
+
+            {/* =================================================
+                             STATUS
+                ================================================== */}
+
+            <div
+              className="
+              mt-10
+              flex
+              items-center
+              justify-center
+              gap-3
+              border-t
+              border-white/10
+              pt-6
+              text-center
+              sm:justify-start
+              sm:text-left
+              "
+            >
+              <div>
+                <p
+                  className="
+                  text-xs
+                  font-medium
+                  tracking-[0.25em]
+                  text-gray-400
+                  "
+                >
+                  LET'S CONNECT
+                </p>
+
+                <p className="mt-1 text-sm text-gray-400">
+                  Turn ideas into something real.
+                </p>
+              </div>
+            </div>
+          </div>
 
         </div>
+
 
       </div>
+
     </section>
   );
 };

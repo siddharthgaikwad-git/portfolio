@@ -26,8 +26,63 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-html {
-  scroll-behavior: smooth;
+
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 100;
+    height: 3px;
+    background: #8A63FF;
+    transform-origin: 0 50%;
+    animation: grow-progress linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes grow-progress {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+}
+
+/* ===== Custom scrollbar ===== */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050507;
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8A63FF, #7749FF);
+  border-radius: 999px;
+  /* track cha colour border la dila, mhanje thumb pilla lahan ani floating distoy */
+  border: 3px solid #050507;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8A63FF;
+  background-clip: padding-box;
+}
+
+/* Firefox (not understant ::-webkit-scrollbar ) */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #7749FF #050507;
+  }
 }
 
 @keyframes textChange {
@@ -44,7 +99,7 @@ html {
 
 .words {
     display: inline-block;
-    height: 1.2em;
+    height: 100%; /* inherit from parent h-7 instead of 1.2em */
     overflow: hidden;
     position: relative;
     vertical-align: bottom;
@@ -54,20 +109,28 @@ html {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        #000 10%,
-        transparent 30%,
-        transparent 70%,
-        #000 90%
+    /* fade to transparent instead of a hardcoded background color */
+    -webkit-mask-image: linear-gradient(
+        transparent 0%,
+        #000 15%,
+        #000 85%,
+        transparent 100%
     );
+    mask-image: linear-gradient(
+        transparent 0%,
+        #000 15%,
+        #000 85%,
+        transparent 100%
+    );
+    backdrop-filter: none;
     z-index: 2;
     pointer-events: none;
 }
 
 .word {
     display: block;
-    height: 1.2em;
-    color: #7749FF;
+    height: 1.75rem; /* match h-7 exactly instead of relying on Tailwind class alone */
+    color: #8A63FF;
     padding-left: 6px;
     animation: spinWords 6s infinite;
 }
@@ -105,3 +168,6 @@ html {
         transform: translateY(-400%);
     }
 }
+
+
+
