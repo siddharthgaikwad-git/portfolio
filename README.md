@@ -19,4 +19,4 @@ A modern personal portfolio website built with Next.js, React, and Tailwind CSS.
 
 ## Version
 
-v1.0
+v2.0
